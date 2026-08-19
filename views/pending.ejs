@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title><%= state === 'notfound' ? 'Kode tidak ditemukan' : 'Belum diaktifkan' %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#EDEAE1; --paper-alt:#E3DFD3; --ink:#1C2321; --ink-soft:#5B6460;
+    --line:#C9C2B4; --stamp-red:#B3392F; --brass:#A6784A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:
+      radial-gradient(circle at 10% 10%, #00000006 0, transparent 40%),
+      radial-gradient(circle at 90% 90%, #00000006 0, transparent 40%),
+      var(--paper);
+    font-family:'Inter', sans-serif; color:var(--ink); padding:24px;
+  }
+  .card{
+    max-width:420px; width:100%; background:var(--paper-alt);
+    border:1px solid var(--line); border-radius:2px; padding:40px 32px;
+    text-align:center; position:relative;
+    box-shadow: 0 1px 0 #fff inset, 0 18px 40px -20px rgba(28,35,33,0.35);
+  }
+  .card::before{
+    content:""; position:absolute; inset:8px; border:1px dashed var(--line); pointer-events:none;
+  }
+  .stamp{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:96px; height:96px; border-radius:50%; border:3px solid var(--stamp-red);
+    color:var(--stamp-red); font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:13px; letter-spacing:0.08em; transform:rotate(-9deg); margin-bottom:22px;
+    text-align:center; line-height:1.25; opacity:0.9;
+  }
+  .stamp.notfound{ border-color:var(--ink-soft); color:var(--ink-soft); }
+  h1{
+    font-family:'Space Grotesk', sans-serif; font-size:22px; margin:0 0 10px;
+    letter-spacing:-0.01em;
+  }
+  p{ color:var(--ink-soft); font-size:14.5px; line-height:1.6; margin:0 0 24px; }
+  .code-tag{
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-weight:700;
+    letter-spacing:0.04em; font-size:13px; background:var(--paper); border:1px solid var(--line);
+    padding:8px 14px; border-radius:2px; color:var(--ink);
+  }
+  .foot{ margin-top:26px; font-size:11.5px; color:var(--ink-soft); letter-spacing:0.03em; text-transform:uppercase; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <% if (state === 'notfound') { %>
+      <div class="stamp notfound">TIDAK<br/>DITEMUKAN</div>
+      <h1>Kode tidak dikenali</h1>
+      <p>Kode ini tidak terdaftar di sistem kami. Pastikan Anda memindai kode asli dari lokasi kami, atau hubungi petugas di tempat.</p>
+    <% } else { %>
+      <div class="stamp">BELUM<br/>AKTIF</div>
+      <h1>Kode ini belum diaktifkan</h1>
+      <p>Tautan ulasan untuk kode ini belum dipasang oleh admin. Coba pindai lagi dalam beberapa saat, atau tanyakan ke petugas di tempat.</p>
+    <% } %>
+    <div class="code-tag"><%= code %></div>
+    <div class="foot">Sistem Kode Ulasan</div>
+  </div>
+</body>
+</html>
