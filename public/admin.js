@@ -16,9 +16,27 @@
     let data = null;
     try { data = await res.json(); } catch (e) {}
     if (!res.ok) {
+      // Sesi habis (misal server restart) di tengah pemakaian: jangan biarkan
+      // modal/tampilan nyangkut, langsung balik ke layar login.
+      if (res.status === 401 && url !== "/api/login") {
+        forceLoggedOut("Sesi kamu berakhir. Silakan login lagi.");
+      }
       throw new Error((data && data.error) || "Terjadi kesalahan.");
     }
     return data;
+  }
+
+  function closeAllModals() {
+    document.querySelectorAll(".modal-overlay").forEach((m) => (m.hidden = true));
+  }
+
+  function forceLoggedOut(message) {
+    closeAllModals();
+    showLogin();
+    if (message) {
+      $("loginError").textContent = message;
+      $("loginError").hidden = false;
+    }
   }
 
   // ---------- Auth ----------
@@ -32,6 +50,7 @@
   }
 
   function showLogin() {
+    closeAllModals();
     loginScreen.hidden = false;
     app.hidden = true;
   }
