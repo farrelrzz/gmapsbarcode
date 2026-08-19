@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Panel Admin — Kode Ulasan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/admin.css" />
+</head>
+<body>
+
+  <!-- ===== LOGIN ===== -->
+  <div id="loginScreen" class="login-wrap">
+    <form id="loginForm" class="login-card">
+      <div class="login-stamp">MASUK</div>
+      <h1>Panel Admin</h1>
+      <p>Sistem Kode Ulasan — masukkan kata sandi untuk mengelola aktivasi.</p>
+      <input type="password" id="loginPassword" placeholder="Kata sandi admin" autocomplete="current-password" required />
+      <button type="submit">Masuk</button>
+      <div id="loginError" class="login-error" hidden></div>
+    </form>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="app" class="app" hidden>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">●</span>
+        <div>
+          <h1>Sistem Kode Ulasan</h1>
+          <span class="baseurl" id="baseUrlLabel">—</span>
+        </div>
+      </div>
+      <button id="logoutBtn" class="ghost-btn">Keluar</button>
+    </header>
+
+    <section class="stats">
+      <div class="stat"><span class="stat-num" id="statTotal">0</span><span class="stat-label">Total Kode</span></div>
+      <div class="stat stat-active"><span class="stat-num" id="statActive">0</span><span class="stat-label">Aktif</span></div>
+      <div class="stat"><span class="stat-num" id="statInactive">0</span><span class="stat-label">Belum Aktif</span></div>
+      <div class="stat"><span class="stat-num" id="statScans">0</span><span class="stat-label">Total Scan</span></div>
+    </section>
+
+    <section class="toolbar-row">
+      <input type="text" id="searchInput" placeholder="Cari kode, label, atau link…" class="search-input" />
+      <select id="statusFilter" class="select-input">
+        <option value="">Semua status</option>
+        <option value="active">Aktif</option>
+        <option value="inactive">Belum aktif</option>
+      </select>
+      <div class="spacer"></div>
+      <button id="exportBtn" class="ghost-btn">Ekspor CSV</button>
+      <button id="printSelectedBtn" class="ghost-btn">Cetak Terpilih</button>
+      <button id="printAllBtn" class="ghost-btn">Cetak Semua</button>
+      <button id="generateBtn" class="primary-btn">+ Buat Kode Baru</button>
+    </section>
+
+    <section class="table-wrap">
+      <table class="ledger">
+        <thead>
+          <tr>
+            <th class="col-check"><input type="checkbox" id="selectAll" /></th>
+            <th>Status</th>
+            <th>Kode</th>
+            <th>Label</th>
+            <th>Tujuan (Link Ulasan)</th>
+            <th>Scan</th>
+            <th>Dibuat</th>
+            <th class="col-actions">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="8" class="empty-row">Memuat…</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ===== MODAL: Generate ===== -->
+  <div id="generateModal" class="modal-overlay" hidden>
+    <form id="generateForm" class="modal-card">
+      <h2>Buat Kode Baru</h2>
+      <p class="modal-sub">Kode akan dibuat berstatus <strong>belum aktif</strong>. Aktifkan satu per satu setelah dicetak.</p>
+      <label>Jumlah kode
+        <input type="number" id="genCount" min="1" max="2000" value="100" required />
+      </label>
+      <label>Awalan kode (opsional)
+        <input type="text" id="genPrefix" placeholder="RVW" maxlength="6" />
+      </label>
+      <label>Label batch (opsional)
+        <input type="text" id="genLabel" placeholder="Contoh: Cabang Cikarang - Batch 1" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="ghost-btn" data-close>Batal</button>
+        <button type="submit" class="primary-btn">Buat Kode</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ===== MODAL: Activate ===== -->
+  <div id="activateModal" class="modal-overlay" hidden>
+    <form id="activateForm" class="modal-card">
+      <h2>Aktifkan Kode</h2>
+      <p class="modal-sub">Kode: <span class="mono" id="activateCodeLabel">—</span></p>
+      <label>Link Google Maps (review link tempat Anda)
+        <input type="url" id="activateUrl" placeholder="https://g.page/r/xxxxx/review" required />
+      </label>
+      <p class="hint">Tautan ini yang akan dibuka saat orang memindai kode tersebut.</p>
+      <div class="modal-actions">
+        <button type="button" class="ghost-btn" data-close>Batal</button>
+        <button type="submit" class="primary-btn">Aktifkan</button>
+      </div>
+      <div id="activateError" class="login-error" hidden></div>
+    </form>
+  </div>
+
+  <script src="/assets/admin.js"></script>
+</body>
+</html>

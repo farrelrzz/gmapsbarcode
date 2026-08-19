@@ -1,10 +1,9 @@
 require("dotenv").config();
 const express = require("express");
-const cookieParser = require("cookie-parser");
+const session = require("express-session");
 const QRCode = require("qrcode");
 const path = require("path");
 const store = require("./lib/store");
-const auth = require("./lib/auth");
 const { generateUniqueCodes } = require("./lib/codes");
 
 const app = express();
@@ -12,14 +11,19 @@ const PORT = process.env.PORT || 3000;
 const BASE_URL = (process.env.BASE_URL || `http://localhost:${PORT}`).replace(/\/+$/, "");
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const SESSION_SECRET = process.env.SESSION_SECRET || "please-change-this-secret";
-const TOKEN_COOKIE = "admin_token";
-const SESSION_MAX_AGE_MS = 1000 * 60 * 60 * 12; // 12 jam
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(
+  session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 12 }, // 12 jam
+  })
+);
 
 // ---------- Util ----------
 function isValidGmapsUrl(url) {
@@ -40,14 +44,8 @@ function isValidGmapsUrl(url) {
   }
 }
 
-function isAuthed(req) {
-  const token = req.cookies && req.cookies[TOKEN_COOKIE];
-  const payload = auth.verify(token, SESSION_SECRET);
-  return !!(payload && payload.admin);
-}
-
 function requireAuth(req, res, next) {
-  if (isAuthed(req)) return next();
+  if (req.session && req.session.isAdmin) return next();
   return res.status(401).json({ ok: false, error: "Belum login." });
 }
 
@@ -59,24 +57,18 @@ function buildRedirectUrl(code) {
 app.post("/api/login", (req, res) => {
   const { password } = req.body || {};
   if (password && password === ADMIN_PASSWORD) {
-    const token = auth.sign({ admin: true, exp: Date.now() + SESSION_MAX_AGE_MS }, SESSION_SECRET);
-    res.cookie(TOKEN_COOKIE, token, {
-      httpOnly: true,
-      maxAge: SESSION_MAX_AGE_MS,
-      sameSite: "lax",
-    });
+    req.session.isAdmin = true;
     return res.json({ ok: true });
   }
   return res.status(401).json({ ok: false, error: "Password salah." });
 });
 
 app.post("/api/logout", (req, res) => {
-  res.clearCookie(TOKEN_COOKIE);
-  res.json({ ok: true });
+  req.session.destroy(() => res.json({ ok: true }));
 });
 
 app.get("/api/session", (req, res) => {
-  res.json({ ok: true, isAdmin: isAuthed(req) });
+  res.json({ ok: true, isAdmin: !!(req.session && req.session.isAdmin) });
 });
 
 app.get("/api/config", requireAuth, (req, res) => {
